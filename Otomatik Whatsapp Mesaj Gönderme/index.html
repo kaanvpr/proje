@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WhatsApp Mesaj Gönder</title>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      background-color: #25D366;
+      margin: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+    }
+
+    .container {
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+      width: 300px;
+      text-align: center;
+      overflow: hidden;
+      animation: fadeInUp 0.8s ease-out;
+    }
+
+    h1 {
+      color: #25D366;
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 10px;
+      color: #333;
+    }
+
+    input {
+      width: calc(100% - 20px);
+      padding: 10px;
+      margin-bottom: 15px;
+      box-sizing: border-box;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      font-size: 16px;
+      transition: border-color 0.3s ease-in-out;
+    }
+
+    input:focus {
+      border-color: #25D366;
+    }
+
+    button {
+      background-color: #25D366;
+      color: #fff;
+      padding: 10px 15px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 16px;
+      transition: background-color 0.3s ease-in-out;
+    }
+
+    button:hover {
+      background-color: #128C7E;
+    }
+
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>WhatsApp Mesaj Gönder</h1>
+    <label for="phoneNumber">Telefon Numarası:</label>
+    <input type="tel" id="phoneNumber" placeholder="5555555555" required>
+    <button onclick="sendMessage()">Mesaj Gönder</button>
+  </div>
+
+  <script>
+    function sendMessage() {
+      const phoneNumber = document.getElementById('phoneNumber').value;
+
+      if (phoneNumber) {
+        const formattedPhoneNumber = `90${phoneNumber}`;
+        const whatsappLink = `https://wa.me/${formattedPhoneNumber}`;
+
+        window.location.href = whatsappLink;
+      } else {
+        alert("Lütfen geçerli bir telefon numarası girin.");
+      }
+    }
+  </script>
+</body>
+</html>

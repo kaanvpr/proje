@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WinWinPoint Görevler</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+            margin: 0;
+            padding: 20px;
+        }
+
+        #task-container {
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            box-sizing: border-box;
+        }
+
+        h2 {
+            text-align: center;
+            color: #007bff;
+            font-size: 28px;
+            margin-bottom: 20px;
+        }
+
+        .task-item {
+            margin-bottom: 15px;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .task-name {
+            flex-grow: 1;
+            font-size: 18px;
+        }
+
+        .task-points {
+            font-size: 18px;
+            color: #28a745;
+        }
+
+        .complete-button {
+            padding: 8px 12px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .complete-button:hover {
+            background-color: #0056b3;
+        }
+
+        #total-points {
+            text-align: center;
+            font-size: 20px;
+            margin-top: 20px;
+            color: #28a745;
+        }
+
+        #bakiye-container {
+            text-align: right;
+            font-size: 18px;
+            margin-top: 10px;
+            color: #007bff;
+        }
+
+        #convert-button {
+            display: block;
+            margin-top: 20px;
+            padding: 14px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 18px;
+            font-weight: bold;
+            width: 100%;
+            text-align: center;
+        }
+
+        #convert-button:hover {
+            background-color: #0056b3;
+        }
+
+        #withdraw-button {
+            display: block;
+            margin-top: 20px;
+            padding: 14px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 18px;
+            font-weight: bold;
+            width: 100%;
+            text-align: center;
+        }
+
+        #withdraw-button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div id="task-container">
+        <h2>WinWinPoint Görevler</h2>
+
+        <div class="task-item">
+            <div class="task-name">Görev 1</div>
+            <div class="task-points">10 Puan</div>
+            <button class="complete-button" onclick="completeTask(10)">Yaptım</button>
+        </div>
+
+        <div class="task-item">
+            <div class="task-name">Görev 2</div>
+            <div class="task-points">15 Puan</div>
+            <button class="complete-button" onclick="completeTask(15)">Yaptım</button>
+        </div>
+
+        <!-- Diğer görevleri ekleyebilirsiniz -->
+
+        <div id="total-points">Toplam Puan: <span id="points">0</span></div>
+        <div id="bakiye-container">Bakiye: <span id="bakiye">0 ₺</span></div>
+
+        <button id="convert-button" onclick="bakiyeCevir()">Bakiyeye Çevir</button>
+        <button id="withdraw-button">Çekim Emri Ver</button>
+    </div>
+
+    <script>
+        function completeTask(points) {
+            var currentPoints = parseInt(document.getElementById("points").textContent);
+            var newPoints = currentPoints + points;
+            document.getElementById("points").textContent = newPoints;
+        }
+
+        function bakiyeCevir() {
+            var currentPoints = parseInt(document.getElementById("points").textContent);
+            
+            if (currentPoints > 0) {
+                var currentBakiye = parseInt(document.getElementById("bakiye").textContent);
+                var newBakiye = currentBakiye + currentPoints;
+                
+                document.getElementById("bakiye").textContent = newBakiye + " ₺";
+                document.getElementById("points").textContent = "0";
+            } else {
+                alert("Çevrilecek puan bulunmamaktadır.");
+            }
+        }
+
+        document.getElementById("withdraw-button").addEventListener("click", function() {
+            var currentPoints = parseInt(document.getElementById("points").textContent);
+
+            if (currentPoints > 0) {
+                alert("Çekim emri başarıyla oluşturuldu!");
+                document.getElementById("points").textContent = "0";
+            } else {
+                alert("Çekim için yeterli puanınız bulunmamaktadır.");
+            }
+        });
+    </script>
+</body>
+</html>

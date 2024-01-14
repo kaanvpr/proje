@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Metin Kaydet</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            text-align: center;
+            margin: 50px;
+        }
+        h2 {
+            color: #3498db;
+        }
+        label {
+            display: block;
+            margin: 10px 0;
+            font-size: 18px;
+            color: #2c3e50;
+        }
+        textarea {
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+        }
+        #saveButton {
+            background-color: #2ecc71;
+            color: white;
+            padding: 10px 20px;
+            font-size: 18px;
+            border: none;
+            cursor: pointer;
+        }
+        #kayitDurumu {
+            margin-top: 20px;
+            font-size: 16px;
+            color: #27ae60;
+        }
+    </style>
+</head>
+<body>
+    <h2>Metin Kaydet</h2>
+    <label for="textInput">Metin Giriniz:</label>
+    <textarea id="textInput" rows="6"></textarea><br>
+    <button id="saveButton" onclick="kaydet()">Kaydet</button>
+    <p id="kayitDurumu"></p>
+
+    <script>
+        function kaydet() {
+            var metin = document.getElementById("textInput").value;
+            if (metin.trim() !== "") {
+                // Bilgileri kaydet
+                kayitEt(metin);
+            } else {
+                document.getElementById("kayitDurumu").innerHTML = "Lütfen metin giriniz.";
+            }
+        }
+
+        function kayitEt(metin) {
+            // XMLHttpRequest kullanarak sunucuya bilgi gönder
+            var xhr = new XMLHttpRequest();
+            xhr.open("POST", "kayit.php", true);
+            xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState == 4) {
+                    // Sunucudan gelen cevap
+                    if (xhr.status == 200) {
+                        var cevap = xhr.responseText;
+                        document.getElementById("kayitDurumu").innerHTML = cevap;
+                    } else {
+                        document.getElementById("kayitDurumu").innerHTML = "Kayıt sırasında bir hata oluştu.";
+                    }
+                }
+            };
+            // Sunucuya metni gönder
+            xhr.send("metin=" + encodeURIComponent(metin));
+        }
+    </script>
+</body>
+</html>

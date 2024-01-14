@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ses Kaydedici</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(to bottom right, #3498db, #2ecc71);
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+
+        #app {
+            text-align: center;
+        }
+
+        button {
+            font-size: 18px;
+            margin: 10px;
+            padding: 15px 20px;
+            cursor: pointer;
+            background-color: #000000;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            transition: background-color 0.3s ease-in-out;
+        }
+
+        button:hover {
+            background-color: #5f0000;
+        }
+
+        #timer {
+            font-size: 24px;
+            margin-top: 20px;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.1);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        #recording-animation {
+            animation: pulse 1s infinite;
+            display: none;
+            font-size: 36px;
+            margin-top: 10px;
+        }
+
+        @keyframes blink {
+            0% {
+                opacity: 0.5;
+            }
+            50% {
+                opacity: 1;
+            }
+            100% {
+                opacity: 0.5;
+            }
+        }
+
+        #recording-text {
+            font-size: 18px;
+            color: #e74c3c;
+            animation: blink 1s infinite;
+            margin-top: 5px;
+        }
+
+        @media (max-width: 600px) {
+            button {
+                font-size: 16px;
+                padding: 12px 16px;
+            }
+
+            #timer {
+                font-size: 20px;
+                margin-top: 15px;
+            }
+
+            #recording-animation {
+                font-size: 28px;
+                margin-top: 15px;
+            }
+
+            #recording-text {
+                font-size: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <button id="startRecording">Kaydı Başlat</button>
+        <button id="stopRecording" disabled>Kaydı Durdur</button>
+        <button id="downloadRecording" disabled>İndir</button>
+        <div id="timer">00:00</div>
+        <div id="recording-animation">🎤</div>
+        <div id="recording-text"></div>
+        <div>
+            <label for="newFileName">Yeni Dosya Adı:</label>
+            <input type="text" id="newFileName" placeholder="Yeni dosya adını girin">
+            <button id="changeFileName" disabled>Değiştir</button>
+        </div>
+    </div>
+    <script>
+        if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+            navigator.mediaDevices.getUserMedia({ audio: true })
+                .then(function (stream) {
+                    var mediaRecorder = new MediaRecorder(stream);
+                    var audioChunks = [];
+                    var timerInterval;
+
+                    var startRecordingBtn = document.getElementById('startRecording');
+                    var stopRecordingBtn = document.getElementById('stopRecording');
+                    var downloadRecordingBtn = document.getElementById('downloadRecording');
+                    var timerElement = document.getElementById('timer');
+                    var recordingAnimation = document.getElementById('recording-animation');
+                    var recordingText = document.getElementById('recording-text');
+                    var newFileNameInput = document.getElementById('newFileName');
+                    var changeFileNameBtn = document.getElementById('changeFileName');
+
+                    startRecordingBtn.addEventListener('click', function () {
+                        mediaRecorder.start();
+                        startRecordingBtn.disabled = true;
+                        stopRecordingBtn.disabled = false;
+                        downloadRecordingBtn.disabled = true;
+                        recordingAnimation.style.display = 'inline-block';
+                        recordingText.style.display = 'block';
+
+                        var startTime = new Date().getTime();
+                        timerInterval = setInterval(function () {
+                            var elapsedTime = new Date().getTime() - startTime;
+                            var formattedTime = formatTime(elapsedTime);
+                            timerElement.textContent = formattedTime;
+                        }, 1000);
+                    });
+
+                    stopRecordingBtn.addEventListener('click', function () {
+                        mediaRecorder.stop();
+                        startRecordingBtn.disabled = false;
+                        stopRecordingBtn.disabled = true;
+                        downloadRecordingBtn.disabled = false;
+                        recordingAnimation.style.display = 'none';
+                        recordingText.style.display = 'none';
+
+                        clearInterval(timerInterval);
+                        timerElement.textContent = '00:00';
+                    });
+
+                    mediaRecorder.ondataavailable = function (event) {
+                        if (event.data.size > 0) {
+                            audioChunks.push(event.data);
+                        }
+                    };
+
+                    mediaRecorder.onstop = function () {
+                        var audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
+                        audioChunks = [];
+                        var audioUrl = URL.createObjectURL(audioBlob);
+
+                        downloadRecordingBtn.addEventListener('click', function () {
+                            var a = document.createElement('a');
+                            a.href = audioUrl;
+                            a.download = getFileName();
+                            document.body.appendChild(a);
+                            a.click();
+                            document.body.removeChild(a);
+                        });
+
+                        changeFileNameBtn.addEventListener('click', function () {
+                            var newFileName = getFileName();
+                            downloadRecordingBtn.download = newFileName;
+                        });
+                    };
+
+                    newFileNameInput.addEventListener('input', function () {
+                        changeFileNameBtn.disabled = newFileNameInput.value.trim() === '';
+                    });
+
+                    function getFileName() {
+                        var fileName = newFileNameInput.value.trim();
+                        return fileName !== '' ? fileName + '.wav' : 'recording.wav';
+                    }
+                })
+                .catch(function (err) {
+                    console.error('Mikrofon erişimi hatası: ', err);
+                });
+        } else {
+            console.error('Tarayıcı MediaRecorder API desteklemiyor.');
+        }
+
+        function formatTime(milliseconds) {
+            var totalSeconds = Math.floor(milliseconds / 1000);
+            var minutes = Math.floor(totalSeconds / 60);
+            var seconds = totalSeconds % 60;
+            return padZero(minutes) + ':' + padZero(seconds);
+        }
+
+        function padZero(number) {
+            return (number < 10) ? '0' + number : number;
+        }
+    </script>
+</body>
+</html>

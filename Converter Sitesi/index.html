@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ücretsiz Dosya Türü Değiştirici</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 20px;
+      background-color: #f8f9fa;
+    }
+    #container {
+      max-width: 500px;
+      margin: 0 auto;
+      padding: 20px;
+      background-color: #ffffff;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      border-radius: 8px;
+    }
+    h1 {
+      color: #007bff;
+      text-align: center;
+    }
+    label {
+      display: block;
+      margin-bottom: 8px;
+    }
+    input, button {
+      padding: 8px;
+      margin-bottom: 16px;
+      width: 100%;
+      box-sizing: border-box;
+    }
+    button {
+      background-color: #007bff;
+      color: #ffffff;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="container">
+    <h1>Ücretsiz Dosya Türü Değiştirici</h1>
+
+    <label for="fileInput">Dosya Seç:</label>
+    <input type="file" id="fileInput" accept=".jpg, .jpeg, .png, .gif, .bmp">
+
+    <label for="conversionFormat">Dönüştürme Formatı:</label>
+    <select id="conversionFormat">
+      <option value="jpeg">JPEG</option>
+      <option value="png">PNG</option>
+      <option value="gif">GIF</option>
+      <option value="bmp">BMP</option>
+    </select>
+
+    <button onclick="convertFile()">Dönüştür</button>
+  </div>
+
+  <script>
+    function convertFile() {
+      const fileInput = document.getElementById('fileInput');
+      const conversionFormat = document.getElementById('conversionFormat').value;
+
+      if (fileInput.files.length > 0) {
+        const file = fileInput.files[0];
+        const reader = new FileReader();
+
+        reader.onload = function (e) {
+          const img = new Image();
+          img.src = e.target.result;
+
+          img.onload = function () {
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+
+            canvas.width = img.width;
+            canvas.height = img.height;
+            ctx.drawImage(img, 0, 0);
+
+            const convertedDataURL = canvas.toDataURL(`image/${conversionFormat}`);
+            
+            const a = document.createElement('a');
+            a.href = convertedDataURL;
+            a.download = `converted_file.${conversionFormat}`;
+            a.click();
+          };
+        };
+
+        reader.readAsDataURL(file);
+      }
+    }
+  </script>
+
+</body>
+</html>

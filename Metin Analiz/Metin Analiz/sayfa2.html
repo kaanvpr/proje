@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Metin Analiz</title>
+    <style>
+        body {
+            background-color: #f0f0f0;
+            color: #333;
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+
+        #text-input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+
+        .search-section {
+            margin-top: 10px;
+        }
+
+        .search-input {
+            margin-bottom: 5px;
+        }
+
+        .search-button {
+            background-color: #3498db;
+            color: #fff;
+            padding: 5px 10px;
+            border: none;
+            cursor: pointer;
+        }
+
+        .search-result {
+            margin-top: 10px;
+        }
+
+        #analyze-button {
+            background-color: #2ecc71;
+            color: #fff;
+            padding: 10px;
+            border: none;
+            cursor: pointer;
+        }
+
+        .analyze-result {
+            margin-top: 20px;
+        }
+
+        .error-message {
+            color: red;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <textarea id="text-input" placeholder="Metin giriniz..." rows="8"></textarea>
+
+    <div class="search-section">
+        <label for="char-search">Aranacak Harf (Max 1 Karakter):</label>
+        <input type="text" id="char-search" class="search-input" placeholder="Harf giriniz..." maxlength="1">
+        <button class="search-button" onclick="searchCharacter()">Bul</button>
+        <div class="search-result"><strong>Aranan Harf Sayısı:</strong> <span id="char-search-count">0</span></div>
+        <div id="char-error" class="error-message"></div>
+    </div>
+
+    <div class="search-section">
+        <label for="word-search">Aranacak Kelime (Min 2 Karakter):</label>
+        <input type="text" id="word-search" class="search-input" placeholder="Kelime veya sayı giriniz..." oninput="validateWordInput()" minlength="2">
+        <button class="search-button" onclick="searchWord()">Bul</button>
+        <div class="search-result"><strong>Aranan Kelime Sayısı:</strong> <span id="word-search-count">0</span></div>
+        <div id="word-error" class="error-message"></div>
+    </div>
+
+    <button id="analyze-button" onclick="analyzeText()">Analiz Et</button>
+
+    <div class="analyze-result">
+        <div><strong>Harf Sayısı:</strong> <span id="char-count">0</span></div>
+        <div><strong>Boşluk Sayısı:</strong> <span id="word-count">0</span></div>
+        <div><strong>Kelime Sayısı:</strong> <span id="space-count">0</span></div>
+    </div>
+
+    <script>
+        function searchCharacter() {
+            var searchChar = document.getElementById("char-search").value;
+            
+            if (searchChar.length !== 1) {
+                document.getElementById("char-error").textContent = "Hata: Lütfen 1 karakter girin.";
+                return;
+            } else {
+                document.getElementById("char-error").textContent = "";
+            }
+
+            var text = document.getElementById("text-input").value;
+            var charSearchCount = countOccurrences(text, searchChar);
+            document.getElementById("char-search-count").textContent = charSearchCount;
+        }
+
+        function validateWordInput() {
+            var wordInput = document.getElementById("word-search");
+            var wordError = document.getElementById("word-error");
+            
+            if (wordInput.value.length < 2) {
+                wordError.textContent = "Hata: Lütfen en az 2 karakter girin.";
+            } else {
+                wordError.textContent = "";
+            }
+        }
+
+        function searchWord() {
+            var searchWord = document.getElementById("word-search").value;
+
+            if (searchWord.length < 2) {
+                document.getElementById("word-error").textContent = "Hata: Lütfen en az 2 karakter girin.";
+                return;
+            } else {
+                document.getElementById("word-error").textContent = "";
+            }
+
+            var text = document.getElementById("text-input").value;
+            var wordSearchCount = countOccurrences(text, searchWord);
+            document.getElementById("word-search-count").textContent = wordSearchCount;
+        }
+
+        function analyzeText() {
+            var text = document.getElementById("text-input").value;
+
+            var charCount = text.replace(/\s/g, "").length; // Boşlukları harf olarak sayma
+            var wordCount = text.split(/\b\S+\b/).filter(function (word) {
+                return word.length > 0;
+            }).length;
+            var spaceCount = text.split(/\S+/).length - 1;
+
+            document.getElementById("char-count").textContent = charCount;
+            document.getElementById("word-count").textContent = wordCount;
+            document.getElementById("space-count").textContent = spaceCount;
+        }
+
+        function countOccurrences(text, search) {
+            var regex = new RegExp(search, 'gi');
+            var matches = text.match(regex);
+            return matches ? matches.length : 0;
+        }
+    </script>
+</body>
+</html>
